@@ -1,5 +1,6 @@
 from graphics import *
 from render_functions import renderImage
+from datetime import datetime
 winW = 1920
 winH = 1080
 
@@ -19,17 +20,37 @@ while not exit:
         exit = True
 
     if page == "initial":
-        print("Hello")
         background = renderImage(win, winW/2, winH/2, "corridor.png")
         position = 150
         leon = renderImage(win, position, (winH/2)+200, "leon-sprite-right.png")
         leavePage = False
         direction = "right"
-        step = 30
-        while not leavePage:
-            keyPress = win.checkKey()
+        step = 10
+        lastTime = 1
 
-            if keyPress == "d":
+        while not leavePage:
+            now = datetime.now()
+
+            current_time = now.strftime("%H:%M:%S")
+
+            keyPress = win.checkKey()
+            if not keyPress:
+                if lastTime != str(int(current_time[-1])%2):
+                    if int(current_time[-1])%2 == 1:
+                        leon[2]()
+                        leon = renderImage(win, position, (winH/2)+200, "./sprites/leon/idle/leon-sprite-idle-"+direction+"-1.png")
+                        lastTime = str(int(current_time[-1])%2)
+                    else:
+                        leon[2]()
+                        leon = renderImage(win, position, (winH/2)+200, "./sprites/leon/idle/leon-sprite-idle-"+direction+"-2.png")
+                        lastTime = str(int(current_time[-1])%2)
+
+            if keyPress == "d" or keyPress == "a":
+                step = 10
+            if keyPress == "D" or keyPress == "A":
+                step = 30
+
+            if keyPress == "d" or keyPress == "D":
                 position += step
                 if direction == "right":
                     leon[0].move(step, 0)
@@ -38,7 +59,7 @@ while not exit:
                     leon[2]()
                     leon = renderImage(win, position, (winH/2)+200, "leon-sprite-right.png")
 
-            if keyPress == "a":
+            if keyPress == "a" or keyPress == "A":
                 position -= step
                 if direction == "left":
                     leon[0].move(-step, 0)
